@@ -1,0 +1,5 @@
+node_modules*
+cron/*.pyc
+newrelic_agent.log
+npm-debug.log
+env_setup.sh

@@ -1,7 +1,7 @@
 {
-  "name": "OpenShift-Sample-App",
+  "name": "tempmonitor",
   "version": "1.0.0",
-  "description": "OpenShift Sample Application",
+  "description": "Temperature Montitor",
   "keywords": [
     "OpenShift",
     "Node.js",
@@ -9,27 +9,30 @@
     "openshift"
   ],
   "author": {
-    "name": "OpenShift",
-    "email": "ramr@example.org",
-    "url": "http://www.openshift.com/"
+    "name": "Patrick Connelly",
+    "email": "patrick@deadlypenguin.com",
+    "url": "http://deadlypenguin.com/"
   },
-  "homepage": "http://www.openshift.com/",
+  "homepage": "http://tempmonitor.deadlypenguin.com/",
   "repository": {
     "type": "git",
-    "url": "https://github.com/openshift/origin-server"
+    "url": "https://github.com/pcon/tempmonitor"
   },
-
   "engines": {
     "node": ">= 0.6.0",
     "npm": ">= 1.0.0"
   },
-
   "dependencies": {
-    "express": "~3.4.4"
+    "express": "~3.4.4",
+    "q": "*",
+    "lodash": "*",
+    "cradle": "*",
+    "swig": "*",
+    "newrelic": "*",
+    "moment": "*"
   },
   "devDependencies": {},
   "bundleDependencies": [],
-
   "private": true,
   "main": "server.js"
 }
