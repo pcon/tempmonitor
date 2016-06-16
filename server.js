@@ -71,6 +71,17 @@ var TempMonitor = function () {
 				});
 		};
 
+		self.routes['/tempstatus'] = function (req, res) {
+			var output, data;
+
+			api.latestData()
+				.then(function (data) {
+					res.setHeader('Content-Type', 'text/html');
+					output = swig.renderFile('html/status_temp.html', data);
+					res.send(output);
+				});
+		};
+
 		self.routes['/'] = function (req, res) {
 			res.setHeader('Content-Type', 'text/html');
 			res.send(self.cache_get('index.html'));
