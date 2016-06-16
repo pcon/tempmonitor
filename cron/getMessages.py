@@ -1,12 +1,10 @@
 import os
-import sys
 import json
 import base64
 import urllib2
 import datetime
 
-QUEUE_URL = 'https://%s/1/projects/%s/queues/%s/messages?n=100' % (os.environ.get('IRONMQ_HOST'), os.environ.get('IRONMQ_PROJECT'), os.environ.get('IRONMQ_QUEUE'))
-DELETE_URL = 'https://%s/1/projects/%s/queues/%s/messages' % (os.environ.get('IRONMQ_HOST'), os.environ.get('IRONMQ_PROJECT'), os.environ.get('IRONMQ_QUEUE'))
+QUEUE_URL = 'https://mq-aws-eu-west-1-1.iron.io/3/projects/%s/queues/%s/reservations' % (os.environ.get('IRONMQ_PROJECT'), os.environ.get('IRONMQ_QUEUE'))
 CLOUDANT_URL = 'https://%s/%s/_bulk_docs' % (os.environ.get('COUCHDB_HOST'), os.environ.get('COUCHDB_DATABASE'))
 
 cloudant_auth = (os.environ.get('COUCHDB_USERNAME'), os.environ.get('COUCHDB_PASSWORD'))
@@ -17,24 +15,24 @@ cloudant_headers = {
     "Authorization": "Basic %s" % base64string
 }
 
+queue_data = {
+    "n": 100,
+    "delete": True
+}
+
 ironmq_get_headers = {
     "Accept": "application/json",
-    "Authorization": "OAuth %s" % os.environ.get('IRONMQ_TOKEN')
+    "Authorization": "OAuth %s" % os.environ.get('IRONMQ_TOKEN'),
+    "Content-Type": "application/json"
 }
 
-ironmq_delete_headers = {
-    "Content-Type": "application/json",
-    "Authorization": "OAuth %s" % os.environ.get('IRONMQ_TOKEN')
-}
-
-request = urllib2.Request(QUEUE_URL, headers=ironmq_get_headers)
+request = urllib2.Request(QUEUE_URL, json.dumps(queue_data), headers=ironmq_get_headers)
 f = urllib2.urlopen(request)
 response = f.read()
 f.close()
 
 data = json.loads(response)
 
-ids = []
 records = {}
 records['docs'] = []
 
@@ -51,18 +49,6 @@ if 'messages' in data:
             doc['timestamp'] = dt.isoformat()
             doc['location'] = os.environ.get('IRONMQ_QUEUE')
             records['docs'].append(doc)
-
-            ids.append(message['id'])
-
-        data = {}
-        data['ids'] = ids
-
-        opener = urllib2.build_opener(urllib2.HTTPHandler)
-        req = urllib2.Request(DELETE_URL, json.dumps(data), ironmq_delete_headers)
-        req.get_method = lambda: 'DELETE'
-        f = urllib2.urlopen(req)
-        response = f.read()
-        f.close()
 
 if len(records['docs']) > 0:
     records_string = json.dumps(records)
